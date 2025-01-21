@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    environment {
+        // Node.js environment setup
+        NODEJS_HOME = '/usr/bin' // Adjust path as per your Node.js installation
+        PATH = "${NODEJS_HOME}:${env.PATH}"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Cloning the GitHub repository
+                git branch: 'master', url: 'https://github.com/Pravin-Speedum/my-nodejs-app.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                // Install Node.js dependencies
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Project') {
+           steps {
+                // Build the Node.js project
+                sh 'npm run build'
+           }
+        }
+
+        stage('Deploy to Nginx Server') {
+            steps {
+                // Use SSH to deploy the build to the Nginx web root
+                sshPublisher(
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'nginx-server', // Defined in Manage Jenkins > Configure System > SSH Servers
+                            transfers: [
+                                sshTransfer(
+                                    sourceFiles: 'dist/**',  // Adjust this path based on your build output
+                                    remoteDirectory: '/var/www/html', // Nginx web root directory
+                                    removePrefix: 'dist',   // Remove 'build' prefix during transfer
+                                    cleanRemote: true        // Clean remote directory before deployment
+                                )
+                            ]
+                        )
+                    ]
+                )
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs.'
+        }
+    }
+}
