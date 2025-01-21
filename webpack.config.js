@@ -1,31 +1,36 @@
 const path = require('path');
 
 module.exports = {
-  // Entry point for your application (main JS file)
-  entry: './src/index.js',  // Modify this based on your actual entry point
+  // Entry point for your client-side JavaScript
+  entry: './index.js',  // This is the main entry for your JavaScript (adjust as needed)
 
   // Output settings for the bundled file
   output: {
-    filename: 'bundle.js',  // The name of the output bundle file
+    filename: 'bundle.js',  // Name of the output bundled file
     path: path.resolve(__dirname, 'dist'),  // Output directory (dist/)
   },
 
-  // Configuration for how modules (JS files) should be transformed
-  module: {
-    rules: [
-      {
-        test: /\.js$/,  // This rule applies to all .js files
-        exclude: /node_modules/,  // Don't transpile files in node_modules
-        use: 'babel-loader',  // Use Babel to transpile JS files
-      },
-    ],
-  },
-
-  // Resolve ES6+ imports and extensions
+  // Resolving extensions so we don't need to specify .js when importing modules
   resolve: {
     extensions: ['.js'],  // Resolve .js files automatically
   },
 
-  // Optional: Configuration for development mode or production
-  mode: 'development',  // Can be 'production' or 'development'
+  // Configuration for how modules should be processed
+  module: {
+    rules: [
+      {
+        test: /\.js$/,  // Apply Babel loader to all .js files
+        exclude: /node_modules/,  // Exclude node_modules from transpilation
+        use: {
+          loader: 'babel-loader',  // Use Babel to transpile JavaScript
+        },
+      },
+    ],
+  },
+
+  // Optional: Enable source maps for easier debugging
+  devtool: 'source-map',
+
+  // Mode: Set to 'development' for easier debugging, 'production' for optimizations
+  mode: 'development',  // Change to 'production' for minified code
 };
