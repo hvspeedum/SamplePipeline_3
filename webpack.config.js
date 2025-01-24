@@ -8,11 +8,44 @@ module.exports = {
   output: {
     filename: 'bundle.js',  // Name of the output bundled file
     path: path.resolve(__dirname, 'dist'),  // Output directory (dist/)
+
+
+//added from gpt0 start:-
+ // Other configurations...
+    ignoreWarnings: [
+        {
+            module: /express/,
+            message: /the request of a dependency is an expression/
+        }
+    ]
+//added from gpt0 ends here
+
+
   },
 
   // Resolving extensions so we don't need to specify .js when importing modules
   resolve: {
     extensions: ['.js'],  // Resolve .js files automatically
+
+//added from gpt0
+fallback: {
+        "zlib": require.resolve("browserify-zlib"),
+        "querystring": require.resolve("querystring-es3"),
+        "path": require.resolve("path-browserify"),
+        "crypto": require.resolve("crypto-browserify"),
+        "stream": require.resolve("stream-browserify"),
+        "fs": false,
+        "url": require.resolve("url/"),
+        "buffer": require.resolve("buffer/"),
+        "util": require.resolve("util/")
+    }
+},
+plugins: [
+    new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser'
+    })
+//added from gpt0 ends here.
   },
 
   // Configuration for how modules should be processed
